@@ -357,7 +357,6 @@
                             - < packet is forwarded back to GWLB but first encapsulted in GENEVE
                         - < GWLB consults routing table and forwards traffic to internet gateway but first it strips off GENEVE
                     - < packet is sent to google.com.
-        - Below is an example of what the return traffic would look like.
 
 ## _Terms_
 Transit Gateway: AWS Managed Router that allows for static and dynamic routing.
