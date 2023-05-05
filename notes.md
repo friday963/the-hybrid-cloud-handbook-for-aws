@@ -43,6 +43,8 @@
 
 ![basic vpc](./images/basicvpc.png)
 - Network engineers could more simply look at a VPC as illustrated below, a router with 4 routed domains attached.  When a packet is sourced from one of those domains to one of the remote domains it consults the route table in the middle and is delivered to the final destination.
+![routed domain](./images/routeddomain.png)
+
 - Similar to this physical illustration of a VPC the actual VPC incorporates a similar concept.  Each VPC has a **VIRTUAL** router sitting between all the subnets in a VPC, and while the data place does not physically traverse that router, it is consulted (at the control place) whenever packets are bound for another network.
 
 
