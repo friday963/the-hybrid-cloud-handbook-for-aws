@@ -41,7 +41,7 @@
 - At its simplest form its a self-contained routed domain.
 - Below is an example of what AWS would present as a classic VPC account in one region, one VPC , along with 2 public subnets and 2 private subnets spread across 2 availability zones.
 
-![basic vpc](./images/basicvpc.png)
+![basic vpc](./images/basicvpc.jpg)
 - Network engineers could more simply look at a VPC as illustrated below, a router with 4 routed domains attached.  When a packet is sourced from one of those domains to one of the remote domains it consults the route table in the middle and is delivered to the final destination.
 - Similar to this physical illustration of a VPC the actual VPC incorporates a similar concept.  Each VPC has a **VIRTUAL** router sitting between all the subnets in a VPC, and while the data place does not physically traverse that router, it is consulted (at the control place) whenever packets are bound for another network.
 
@@ -115,7 +115,7 @@
     - To better understand how it works, it can be distilled down to a simple tunnel between two endpoints.
     - A few examples of Privatelink technology in use would be from Gateway endpoints, interface endpoints, and SaaS solutions from a third party vendor.  They will be mentioned in the 'endpoints' section but know that privatelink simply gives a consumer of a resources the ability to utilize a service as though its a local construct within their VPC and regardless of whether its a publicly available resource (S3, Dynamo DB, etc.) or a private resources (third party API, or even internal tooling residing in another VPC, Region, or account).
 
-    ![privatelink](./images/privatelink.png)
+    ![privatelink](./images/privatelink.jpg)
 
 
 ## _Endpoints (Gateway/Interface)_
@@ -186,7 +186,7 @@
     - Its worth noting that if you had a DX connection with 3 VPCs (that were not peered together) and those VPC's needed to communicate, the VPC's would consult their route table and if they had a route to the other VPCs, traffic would need to go all the way back on-prem before being routed back into AWS.  
     - The point to mention is that there is no routing intelligence within the DX connection.
     - Check the image below for an illustration of the traffic flow.
-    ![DX traffic flow](./images/dxconnection.png)
+    ![DX traffic flow](./images/dxconnection.jpg)
 - Direct connect is just a physical port on AWS infrastructure that connects to AWS fabric.
 - Peering requirements:
     - 1, 10, and 100 Gbps speds supported depending on whether you directly peer or whether you have a third party hosting the connection on your behalf.
@@ -246,7 +246,7 @@
     - This solution provides an cloud native routing solution, all traffic traversing its data plane between on-prem and between VPC's.  
     - In the image below we see a BGP peering relationship with the Transit gateway (made available via DX).  From there, the VPC's are attached to the transit gateway in a hub and spoke model.  Traffic needing to go from one VPC to another will route to the transit gateway and into the other VPC.
 
-    ![transit gateway](./images/dx2transit.png)
+    ![transit gateway](./images/dx2transit.jpg)
 ## _DX Gateway_
 - DX Gateway avoids some of the challenges of the traditional Direct Connect (DX).  Lets briefly cover the differences.
     - DX (traditional):
@@ -266,14 +266,14 @@
     - DX gateways and Private VIF (to VPC)
         - Looking at the example below we can see a similar design to the DX example, however here we see only a single VIF utilized to form our BGP peering session.  In addition, take notice of the fact that we can now connect to more than one region.  Again this global construct is no longer region locked allowing one peering session to give us network connectivity to all of our regions.
 
-    ![DX Gateway](./images/dx2dxgateway.png)
+    ![DX Gateway](./images/dx2dxgateway.jpg)
 
     - DX Gateways and Transit VIF (to Transit Gateways)
         - DX Gateway also extends the single VIF concept to transit gateways.  The singular transit VIF can connect to one or more transit gateways. In the image below, notice the single DX gateway connected to 2 TGW's.  In this case traffic between the work loads hanging off the TGW can communicate within the cloud, but the workloads in separate regions, attached to separate TGWs would need to go all the way back to the on-prem router to communicate (assuming there is no transit gateway peering, which the graphic does not demonstrate.) 
 
         - Another thing to mention from the graphic below is the use of **TWO** DX gateways.  A DX Gateway can peer with a private or transit VIF, but not both.  If both types are required, you need two separate DX Gateways.
 
-    ![DX Gateway Private/Transit VIF](./images/dx2dxgateway2transit2vgw.png)
+    ![DX Gateway Private/Transit VIF](./images/dx2dxgateway2transit2vgw.jpg)
 
     - Two take aways from the examples above:
         - No matter whether you're using a private or transit VIF attached to a DX gateway, the routing control plane and data plane is the on-prem router.
