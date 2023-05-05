@@ -46,7 +46,7 @@
 
 ![routed domain](./images/routeddomain.png)
 
-- Similar to this physical illustration of a VPC the actual VPC incorporates a similar concept.  Each VPC has a **VIRTUAL** router sitting between all the subnets in a VPC, and while the data place does not physically traverse that router, it is consulted (at the control place) whenever packets are bound for another network.
+- Similar to this physical illustration of a VPC the actual VPC incorporates a similar concept.  Each VPC has a **VIRTUAL** router sitting between all the subnets in a VPC, and while the data place does not physically traverse that router, it is consulted (at the control plane) whenever packets are bound for another network.
 
 
 ### _Random VPC facts_
@@ -85,7 +85,7 @@
 - Instead we find a lot of static route table manipulation to get packets from one location to another.
 - Routing within a VPC is very generic by default.  When creating a VPC you must choose a parent subnet (as large as /16 or small as /28).  The resulting route table will show one entry, a "local" route to that designated VPC CIDR block.  
     - This single route entry is all you get to start your routing journey.  Any additional endpoints will either need to be statically added, or dynamically added depending on the software services added and whether they actually place a route in that route table.
-    - Lets address the concept of the "local" route as described above.  Just because its considered local, that does not mean it is physically local to the VPC router.  These hosts will be separated out diversely between availability zones and almost assuredly will not be physically local by any stretch of the imagination.
+    - Let's address the concept of the "local" route as described above.  Just because its considered local, that does not mean it is physically local to the VPC router.  These hosts will be separated out diversely between availability zones and almost assuredly will not be physically local by any stretch of the imagination.
 - Route tables in the cloud are more like VRF's to a traditional network engineer.  
     - The route table is logical and can be associated with subnets to isolate or direct traffic for the associated subnets as the engineer see's fit.
     - Just like a VRF that can have interfaces, peering relationships, and routes associated with it.  These routers are associated with subnets to isolate and direct traffic.
@@ -117,6 +117,7 @@
 - At a high level Privatelink provides connectivity between two endpoints using the **AWS underlay networking**.
     - To better understand how it works, it can be distilled down to a simple tunnel between two endpoints.
     - A few examples of Privatelink technology in use would be from Gateway endpoints, interface endpoints, and SaaS solutions from a third party vendor.  They will be mentioned in the 'endpoints' section but know that privatelink simply gives a consumer of a resources the ability to utilize a service as though its a local construct within their VPC and regardless of whether its a publicly available resource (S3, Dynamo DB, etc.) or a private resources (third party API, or even internal tooling residing in another VPC, Region, or account).
+    - Below you can see an example of privatelink being used between two businesses.  ABC Corp and XYZ Corp, XYZ is providing a SaaS that ABC wants to consume.  XYZ fronts a service with a load balancer with workloads behind it in two subnets.  When the request to consume these services is approved, ABC will recieve a local endpoint in the subnets where they want to consume these services.  By providing an ENI local to the consumers subnet the service looks local to them, this also means they could have overlapping IP space and never worry about conflicts.
 
     ![privatelink](./images/privatelink.png)
 
@@ -189,6 +190,7 @@
     - Its worth noting that if you had a DX connection with 3 VPCs (that were not peered together) and those VPC's needed to communicate, the VPC's would consult their route table and if they had a route to the other VPCs, traffic would need to go all the way back on-prem before being routed back into AWS.  
     - The point to mention is that there is no routing intelligence within the DX connection.
     - Check the image below for an illustration of the traffic flow.
+    - Notice the green arrows representing traffic flow.  If any one of these VPC"s needed to communicate with each other (assuming they have routes to each other), they would need to travel back to the on-prem customer gateway device before going back into the AWS infrastructure.
     ![DX traffic flow](./images/dxconnection.png)
 - Direct connect is just a physical port on AWS infrastructure that connects to AWS fabric.
 - Peering requirements:
@@ -248,7 +250,7 @@
     - Take notice of the image below.  This is to contrast the difference between a DX gateway and a transit gateway.  DX gateway which is not routing aware vs a transit gateway which is routing aware.
     - This solution provides an cloud native routing solution, all traffic traversing its data plane between on-prem and between VPC's.  
     - In the image below we see a BGP peering relationship with the Transit gateway (made available via DX).  From there, the VPC's are attached to the transit gateway in a hub and spoke model.  Traffic needing to go from one VPC to another will route to the transit gateway and into the other VPC.
-
+    - Notice the green arrows again, we now keep "cloud" traffic in the cloud.  The transit gateway is routing away and will forward traffic as needed.  If traffic is destined for on-prem, the transit gateway will forward it there, but if it's destined for another VPC it will forward from the transit gateway to that destination.
     ![transit gateway](./images/dx2transit.png)
 ## _DX Gateway_
 - DX Gateway avoids some of the challenges of the traditional Direct Connect (DX).  Lets briefly cover the differences.
